@@ -1,8 +1,9 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, text)
-import Html.Events exposing (onClick)
+import Html exposing (Html, button, div, input, text)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
 
 
 
@@ -18,12 +19,13 @@ main =
 
 
 type alias Model =
-    Int
+    { content : String
+    }
 
 
 init : Model
 init =
-    0
+    { content = "" }
 
 
 
@@ -31,26 +33,14 @@ init =
 
 
 type Msg
-    = Increment
-    | Increment10
-    | Decrement
-    | Reset
+    = Change String
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        Increment ->
-            model + 1
-
-        Increment10 ->
-            model + 10
-
-        Decrement ->
-            model - 1
-
-        Reset ->
-            init
+        Change newContent ->
+            { model | content = newContent }
 
 
 
@@ -60,10 +50,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ button [ onClick Decrement ] [ text "-" ]
-        , div [] [ text (String.fromInt model) ]
-        , button [ onClick Increment ] [ text "+" ]
-        , button [ onClick Increment10 ] [ text "+10" ]
-        , div []
-            [ button [ onClick Reset ] [ text "reset" ] ]
+        [ input [ placeholder "text", value model.content, onInput Change ] []
+        , div [] [ text (String.reverse model.content) ]
+        , div [] [ text (String.fromInt (String.length model.content)) ]
         ]
