@@ -78,16 +78,23 @@ viewValidation model =
         div [] []
 
     else if String.length model.password < 8 then
-        div [ style "color" "red" ] [ text "password is too short" ]
+        passwordError "password is too short"
 
-    else if String.any Char.isDigit model.password == False then
-        div [ style "color" "red" ] [ text "password must contain digit" ]
+    else if not (String.any Char.isDigit model.password) then
+        passwordError "password must contain digit"
 
     else if model.password /= model.passwordAgain then
-        div [ style "color" "red" ] [ text "password do not match!" ]
-
-    else if model.password == "hoge" then
-        div [ style "color" "red" ] [ text "hoge" ]
+        passwordError "password do not match!"
 
     else
-        div [ style "color" "green" ] [ text "OK" ]
+        passwordInfo "OK"
+
+
+passwordInfo : String -> Html msg
+passwordInfo msg =
+    div [ style "color" "green" ] [ text msg ]
+
+
+passwordError : String -> Html msg
+passwordError msg =
+    div [ style "color" "red" ] [ text msg ]
