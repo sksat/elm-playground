@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, input, text)
+import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 
@@ -19,13 +19,15 @@ main =
 
 
 type alias Model =
-    { content : String
+    { name : String
+    , password : String
+    , passwordAgain : String
     }
 
 
 init : Model
 init =
-    { content = "" }
+    Model "" "" ""
 
 
 
@@ -33,14 +35,22 @@ init =
 
 
 type Msg
-    = Change String
+    = Name String
+    | Password String
+    | PasswordAgain String
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        Change newContent ->
-            { model | content = newContent }
+        Name name ->
+            { model | name = name }
+
+        Password password ->
+            { model | password = password }
+
+        PasswordAgain password ->
+            { model | passwordAgain = password }
 
 
 
@@ -50,7 +60,34 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ input [ placeholder "text", value model.content, onInput Change ] []
-        , div [] [ text (String.reverse model.content) ]
-        , div [] [ text (String.fromInt (String.length model.content)) ]
+        [ viewInput "text" "Name" model.name Name
+        , viewInput "password" "Password" model.password Password
+        , viewInput "password" "Re-enter password" model.passwordAgain PasswordAgain
+        , viewValidation model
         ]
+
+
+viewInput : String -> String -> String -> (String -> msg) -> Html msg
+viewInput t p v toMsg =
+    input [ type_ t, placeholder p, value v, onInput toMsg ] []
+
+
+viewValidation : Model -> Html msg
+viewValidation model =
+    if String.isEmpty model.password then
+        div [] []
+
+    else if String.length model.password < 8 then
+        div [ style "color" "red" ] [ text "password is too short" ]
+
+    else if String.any Char.isDigit model.password == False then
+        div [ style "color" "red" ] [ text "password must contain digit" ]
+
+    else if model.password /= model.passwordAgain then
+        div [ style "color" "red" ] [ text "password do not match!" ]
+
+    else if model.password == "hoge" then
+        div [ style "color" "red" ] [ text "hoge" ]
+
+    else
+        div [ style "color" "green" ] [ text "OK" ]
